@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
-//@RestController
+@RestController
 public class DemoApplication {
 
 	public static void main(String[] args) {
@@ -15,10 +15,10 @@ public class DemoApplication {
 		System.out.println("Server is Started...");
 	}
 	
-//	@GetMapping("/")
-//	public String home()
-//	{
-//		return "<div align=\"center\"><h1>Hello Spring Test</h1></div>";
-//	}
+	@GetMapping("/")
+	public String home()
+	{
+		return "<div align=\"center\"><h1>Hello Spring Test</h1></div>";
+	}
 
 }
