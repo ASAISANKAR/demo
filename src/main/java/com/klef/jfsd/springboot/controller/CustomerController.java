@@ -1,14 +1,19 @@
 package com.klef.jfsd.springboot.controller;
 
+import java.time.LocalDateTime;
+
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 import com.klef.jfsd.springboot.model.Customer;
+import com.klef.jfsd.springboot.model.Log;
 import com.klef.jfsd.springboot.service.CustomerService;
-
+import com.klef.jfsd.springboot.service.LogService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -19,15 +24,49 @@ public class CustomerController
 	@Autowired
 	private CustomerService customerService;
 	
+	@Autowired
+	private LogService logser;
 	
 	@GetMapping("/")
-	public ModelAndView home()
+	public ModelAndView home(HttpServletRequest request, 
+            @RequestHeader(value = "User-Agent") String userAgent)
 	{
+		 String ipAddress = getClientIp(request);
+		 LocalDateTime currentDateTime = LocalDateTime.now();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	        String formattedDateTime = currentDateTime.format(formatter);
+		 Log log=new Log();
+		 log.setIp(ipAddress);
+		 log.setDatetime(formattedDateTime);
+	     logser.LogRegistration(log);
 		ModelAndView mv=new ModelAndView();
 		mv.setViewName("home");
 		return mv;
 	}
 	
+	 private String getClientIp(HttpServletRequest request) {
+	        String ipAddress = request.getHeader("X-Forwarded-For");
+	        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+	            ipAddress = request.getHeader("Proxy-Client-IP");
+	        }
+	        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+	            ipAddress = request.getHeader("WL-Proxy-Client-IP");
+	        }
+	        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+	            ipAddress = request.getHeader("HTTP_CLIENT_IP");
+	        }
+	        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+	            ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
+	        }
+	        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+	            ipAddress = request.getRemoteAddr();
+	        }
+	        // If multiple IPs are present (common in X-Forwarded-For), take the first one
+	        if (ipAddress != null && ipAddress.contains(",")) {
+	            ipAddress = ipAddress.split(",")[0];
+	        }
+	        return ipAddress;
+	    }
 	
 	@GetMapping("customerreg")
 	public ModelAndView customerreg()
