@@ -5,19 +5,29 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.ModelAndView;
 import com.klef.jfsd.springboot.model.Customer;
 import com.klef.jfsd.springboot.model.Log;
+import com.klef.jfsd.springboot.model.React;
 import com.klef.jfsd.springboot.service.CustomerService;
 import com.klef.jfsd.springboot.service.LogService;
+import com.klef.jfsd.springboot.service.ReactService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+
+@CrossOrigin
 @Controller
 public class CustomerController 
 {
@@ -26,6 +36,11 @@ public class CustomerController
 	
 	@Autowired
 	private LogService logser;
+	
+	@Autowired
+	private ReactService reactser;
+	
+	
 	
 	@GetMapping("/")
 	public ModelAndView home(HttpServletRequest request, 
@@ -67,7 +82,17 @@ public class CustomerController
 	        }
 	        return ipAddress;
 	    }
+	 
+	 @RequestMapping(value = "signup",method = RequestMethod.POST)
+	 public ResponseEntity<String> registerUser(@RequestBody React user) {
+	     reactser.ReactRegistration(user);  
+	     return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+	 }
+
+	 
 	
+	 
+	 
 	@GetMapping("customerreg")
 	public ModelAndView customerreg()
 	{
